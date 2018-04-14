@@ -57,7 +57,7 @@ describe.skip('top blogs', () => {
 })
 
 
-describe('top blogs', () => {
+describe.skip('top blogs', () => {
 	test('when using the demo list with 6 blogs likes the one with most likes is returned', () => {
 		const result = listHelper.favoriteBlog(blogs)
 		expect(result).toEqual({"author": "Edsger W. Dijkstra", "likes": 12, "title": "Canonical string reduction"})
@@ -65,7 +65,7 @@ describe('top blogs', () => {
 })
 
 
-describe('total likes', () => {
+describe.skip('total likes', () => {
   const listWithOneBlog = [
     {
       _id: '5a422aa71b54a676234d17f8',
