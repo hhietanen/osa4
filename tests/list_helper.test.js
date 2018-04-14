@@ -49,10 +49,11 @@ const blogs = [
     __v: 0
   }  
 ]
-
-test('dummy is called', () => {
-  const result = listHelper.dummy(blogs)
-  expect(result).toBe(1)
+describe.skip('top blogs', () => {
+	test('dummy is called', () => {
+		const result = listHelper.dummy(blogs)
+		expect(result).toBe(1)
+	})
 })
 
 

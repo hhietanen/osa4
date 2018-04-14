@@ -9,6 +9,7 @@ const totalLikes = (blogs) => {
   },0)
 }
 
+//Tehtävä 4.5.
 const favoriteBlog = (blogs) =>{
 	const topBlog = blogs.reduce(function(topBlog, blog){
 		if (topBlog === {})

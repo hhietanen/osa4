@@ -3,6 +3,7 @@ module.exports = {
         "node": true,
         "es6": true
     },
+    "parser": "babel-eslint",
     "extends": "eslint:recommended",
     "rules": {
         "indent": [
@@ -37,3 +38,4 @@ module.exports = {
         "describe": true
     }
 };
+
