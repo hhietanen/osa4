@@ -9,9 +9,14 @@ const url = process.env.MONGODB_URI
 
 mongoose.connect(url)
 
-//const mongoUrl = 'mongodb://localhost/bloglist'
-//mongoose.connect(mongoUrl)
-
+mongoose
+  .connect(process.env.MONGODB_URI)
+  .then( () => {
+    console.log('connected to database', process.env.MONGODB_URI)
+  })
+  .catch( err => {
+    console.log(err)
+  })
 
 const Schema = mongoose.Schema
 const blogSchema = new Schema({
