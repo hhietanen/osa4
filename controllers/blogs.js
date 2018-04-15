@@ -12,6 +12,42 @@ blogRouter.get('/', async (request, response) => {
   }
 })
 
+
+blogRouter.put('/:id', async (request, response) => {
+
+  try{
+    const oldBlog = await Blog.findById(request.params.id)
+
+    const body = request.body
+    
+    const blog = {
+    title: body.title ? body.title : oldBlog.title,
+    author: body.author ? body.author : oldBlog.author,
+    url: body.url ? body.url : oldBlog.url,
+    likes: body.likes ? body.likes : oldBlog.likes }
+
+    await Blog.findByIdAndUpdate(request.params.id, blog, {new:true})
+    response.json(await Blog.findById(request.params.id))
+  } catch (error) {
+    console.log(error)
+    response.status(400).send({ error: 'problem with ID' })
+  }
+})
+
+blogRouter.delete('/:id', async (request, response) =>{
+  try{
+    await Blog.findByIdAndRemove(request.params.id)
+
+    response.status(204).end()
+
+  }catch (exception){
+    console.log(exception)
+    response.status(400).send({ error: 'error in deleting blog' })    
+  }
+
+})
+
+
 blogRouter.post('/', async (request, response) => {
   try {
     const body = request.body
@@ -19,19 +55,12 @@ blogRouter.post('/', async (request, response) => {
       return response.status(400).json({error : 'title missing'})
     }
 
-    // if (body.likes === undefined || body.likes === null  ){
-    //    body.likes=0
-    // }
-
     const blog = new Blog({
     title: body.title,
     author: body.author,
     url: body.url,
     likes: body.likes ? body.likes : 0
-
-
     })
-  console.log(blog)
 
   const savedBlog = await blog
     .save()
