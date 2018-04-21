@@ -6,6 +6,7 @@ const app = express()
 const mongoose = require('mongoose')
 const Blog = require('./models/blog')
 const notesRouter = require('./controllers/blogs')
+const usersRouter = require('./controllers/users')
 const config = require('./utils/config')
 const morgan = require('morgan')
 
@@ -22,6 +23,7 @@ morgan.token('body', function getId (req) {
 app.use(morgan(':method :url :body :status :res[content-length] - :response-time ms'))
 
 app.use('/api/blogs', notesRouter)
+app.use('/api/users', usersRouter)
 
 const server = http.createServer(app)
 
