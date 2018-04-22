@@ -4,14 +4,6 @@ const Blog = require('../models/blog')
 const User = require('../models/user')
 
 
-// const getTokenFrom = (request) => {
-//   const authorization = request.get('authorization')
-//   if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
-//     return authorization.substring(7)
-//   }
-//   return null
-// }
-
 blogRouter.get('/', async (request, response) => {
   try{
     const blogs = await Blog
@@ -32,7 +24,7 @@ blogRouter.put('/:id', async (request, response) => {
     const oldBlog = await Blog.findById(request.params.id)
 
     const body = request.body
-    
+
     const blog = {
     title: body.title ? body.title : oldBlog.title,
     author: body.author ? body.author : oldBlog.author,
@@ -49,9 +41,25 @@ blogRouter.put('/:id', async (request, response) => {
 
 blogRouter.delete('/:id', async (request, response) =>{
   try{
-    await Blog.findByIdAndRemove(request.params.id)
+    const decodedToken = jwt.verify(request.token, process.env.SECRET)
 
+    if (!request.token || !decodedToken.id) {
+      return response.status(401).json({ error: 'token missing or invalid' })
+    }
+    console.log(decodedToken)
+    const user = await User.findById(decodedToken.id)
+    console.log(user.id)
+
+    const targetBlog = await Blog.findById(request.params.id)
+    console.log(targetBlog.user)
+
+    if (targetBlog.user.toString() === user.id) {
+    await Blog.findByIdAndRemove(request.params.id)
     response.status(204).end()
+    }
+    
+else 
+    response.status(400).send({ error: 'You are not allowed to delete the blog' })    
 
   }catch (exception){
     console.log(exception)
@@ -65,29 +73,20 @@ blogRouter.post('/', async (request, response) => {
   const body = request.body
 
   try {
-//    const token = getTokenFrom(request)
     const decodedToken = jwt.verify(request.token, process.env.SECRET)
 
     if (!request.token || !decodedToken.id) {
       return response.status(401).json({ error: 'token missing or invalid' })
     }
 
-
     const users = await User.find( {} )
     const usersArray =  users.map(User.format)
     
-//    body.userId= body.userId ? body.userId : usersArray[usersArray.length-1].id
-
     if (body.title === undefined){
       return response.status(400).json({error : 'title missing'})
     }
 
-    console.log('decoded token:' , decodedToken)
-    console.log(decodedToken.id)
-    console.log(await User.findById(decodedToken.id))
-
     const user = await User.findById(decodedToken.id)
-    console.log('User:', user)
 
     const blog = new Blog({
     title: body.title,

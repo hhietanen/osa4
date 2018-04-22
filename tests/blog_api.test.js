@@ -87,6 +87,17 @@ beforeAll(async () => {
   const blogObjects = initialBlogs.map(blog => new Blog(blog))
   const promiseArray = blogObjects.map(blog => blog.save())
   await Promise.all(promiseArray)
+  const credentials = {
+	username: "hxhietan",
+    password: "salainen"
+  }
+  const login = await api
+	    .post('/api/login')
+	    .send(credentials)
+	    .expect(200)
+	    .expect('Content-Type', /application\/json/)
+
+console.log(login.body.token)
 })
 
 
