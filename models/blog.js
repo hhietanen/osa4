@@ -27,13 +27,14 @@ const blogSchema = new Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 })
 
-blogSchema.statics.format = function(person, cb){
+blogSchema.statics.format = function(blog, cb){
   return {
+  id: blog._id,
   title: blog.title,
   author: blog.author,
   url: blog.url,
   likes: blog.likes,
-  id: blog._id
+  user: blog.user
   }
 }
 
