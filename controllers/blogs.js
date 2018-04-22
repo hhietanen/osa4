@@ -1,7 +1,16 @@
 const blogRouter = require('express').Router()
+const jwt = require('jsonwebtoken')
 const Blog = require('../models/blog')
 const User = require('../models/user')
 
+
+// const getTokenFrom = (request) => {
+//   const authorization = request.get('authorization')
+//   if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+//     return authorization.substring(7)
+//   }
+//   return null
+// }
 
 blogRouter.get('/', async (request, response) => {
   try{
@@ -53,49 +62,56 @@ blogRouter.delete('/:id', async (request, response) =>{
 
 
 blogRouter.post('/', async (request, response) => {
-  try {
-    const body = request.body
-    console.log(body.userId)
+  const body = request.body
 
-   const users = await User.find( {} )
-   const usersArray = await users.map(User.format)
-   console.log(usersArray.length)
+  try {
+//    const token = getTokenFrom(request)
+    const decodedToken = jwt.verify(request.token, process.env.SECRET)
+
+    if (!request.token || !decodedToken.id) {
+      return response.status(401).json({ error: 'token missing or invalid' })
+    }
+
+
+    const users = await User.find( {} )
+    const usersArray =  users.map(User.format)
+    
+//    body.userId= body.userId ? body.userId : usersArray[usersArray.length-1].id
 
     if (body.title === undefined){
       return response.status(400).json({error : 'title missing'})
     }
 
-     if (body.userId === undefined){
-      body.userId = usersArray[usersArray.length-1].id
-    }
+    console.log('decoded token:' , decodedToken)
+    console.log(decodedToken.id)
+    console.log(await User.findById(decodedToken.id))
 
-  const user = await User.findById(body.userId)
-  console.log(user)
-  console.log(body.userId)
+    const user = await User.findById(decodedToken.id)
+    console.log('User:', user)
 
     const blog = new Blog({
     title: body.title,
     author: body.author,
     url: body.url,
     likes: body.likes ? body.likes : 0,
-    user : body.userId
+    user : user.id
     })
 
-  console.log(blog.user)
-
   const savedBlog = await blog.save()
-  console.log(savedBlog._id)
 
-  
   user.blogs = user.blogs.concat(savedBlog._id)
-  console.log(user.blogs)
+
   await user.save()
-  console.log(user)
-      response.status(201).json(Blog.format(blog))
+  response.status(201).json(Blog.format(blog))
+  
     } catch (exception) {
+     if (exception.name === 'JsonWebTokenError' ) {
+      response.status(401).json({ error: exception.message })
+     } else {
       console.log(exception)
       response.status(500).json({error : 'things went wrong...'})
     }
+  }
 })
 
 module.exports = blogRouter

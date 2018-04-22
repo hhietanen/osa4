@@ -81,7 +81,7 @@ describe('when there is initially one user at db', async () => {
 	})
 })
 
-describe('when there are tw blogposts in the DB', async () => {
+describe('when there are two blogposts in the DB', async () => {
 beforeAll(async () => {
   await Blog.remove({})
   const blogObjects = initialBlogs.map(blog => new Blog(blog))
